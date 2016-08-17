@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Welcome to ProjTS</title>
+
+    <!-- Bootstrap Core CSS 
+    <link href="assets/css/home.css" rel="stylesheet">-->
+    <!--<link href="assets/css/style.css" rel="stylesheet">  	-->
+	<link href="assets/css/salesforce-lightning-design-system.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <style>
+    body {
+        padding-top: 70px;
+        /* Required padding for .navbar-fixed-top. Remove if using .navbar-static-top. Change if height of navigation changes. */
+    }
+    </style>
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+	<body vlink="#000000" >	
+	    <!-- Navigation -->
+          <!-- Navigation -->
+          <nav class="navbar navbar-default navbar-fixed-top" role="navigation" style="margin-bottom: 0"              
+          </nav>
+				
+		<ul id="list"></ul>
+		
+	    <!-- Page Content -->		
+        <div id="lightningId" />  	
+	    
+	
+	    <!-- Bootstrap Core JavaScript -->
+	    
+		<script src="assets/js/force.js"></script>				
+		<script src="https://projts-dev-ed.lightning.force.com/lightning/lightning.out.js"></script>
+
+		
+		<script>			
+			if(!sessionStorage.getItem("projtsAccesToken")){		
+				force.login(function() {
+					var oauth = force.getOauth();
+					console.log(oauth);
+					if (typeof(Storage) !== "undefined") {
+						// Store						
+						sessionStorage.setItem("projtsAccesToken", oauth.access_token);					
+						sessionStorage.setItem("projtsInstance_url", oauth.instance_url);					
+					}				
+					getLightiningComponent(oauth);
+				})
+			}else{
+				oauth = {};
+				oauth.access_token = sessionStorage.getItem("projtsAccesToken");
+				oauth.instance_url = sessionStorage.getItem("projtsInstance_url");
+				getLightiningComponent(oauth);
+			}
+			
+			function getLightiningComponent(oauth){
+				//console.log(oauth);
+				var url;
+				if(oauth){
+					console.log(oauth.instance_url);
+					if(oauth.instance_url){						
+						url = oauth.instance_url.replace("my.salesforce", "lightning.force");
+					}
+				var accessToken = oauth.access_token;
+				$Lightning.use("projts:TimeSheetApp", function() {
+					$Lightning.createComponent(
+						"projts:TimeSheetComponent",
+						{},
+						"lightningId",
+						function(cmp) {
+							console.log("Component created!");
+							console.log(cmp);
+						});
+					},url,accessToken);			
+				}
+			}			
+		</script>		
+	</body>
+
+</html>
